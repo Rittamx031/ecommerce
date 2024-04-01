@@ -1,30 +1,20 @@
-const express = require('express');
-const {default: helmet} = require('helmet');
+const express = require('express')
 const app = express();
-const morgan = require('morgan');
-const compression = require('compression');
-// init middleware
-// morgan.middleware
-// app.use(morgan('dev'));
-app.use(morgan('tiny'));
-// app.use(morgan('common'));
-// app.use(morgan('short'));
-// app.use(morgan('dev'));
-// helmet.middleware
+const {default: helmet} =require('helmet')
+const morgan = require('morgan')
+const compression = require('compression')
+require('./dbs/init.mongoDB')
+// export
 app.use(helmet());
-// compression.middleware
+app.use(morgan("dev"));
 app.use(compression());
 
-// init db
-// init routes
-app.get('/', (req, res) => {
-    const srt = "that cowws"
+app.get('/', (req, res) =>{
+    const str = "String Path"
     return res.status(200).json({
         message: "OK",
-        metadata: srt.repeat(10000)
-    });
-})
-// handing error messages
-
-
-module.exports = app
+        metadata: str.repeat(1000)
+    }
+    )
+});
+module.exports = app;
