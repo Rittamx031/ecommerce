@@ -16,6 +16,9 @@ app.use(helmet());
 app.use(compression());
 
 // init db
+require('./dbs/init.mongoDB')
+// const { checkOverload } = require('./helpers/check.connect');
+// checkOverload();
 // init routes
 app.get('/', (req, res) => {
     const srt = "that cowws"
