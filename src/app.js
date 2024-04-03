@@ -15,19 +15,15 @@ app.use(morgan('tiny'));
 app.use(helmet());
 // compression.middleware
 app.use(compression());
+app.use(express.json());
+app.use(express.urlencoded({extended:true}));
 
 // init db
 require('./dbs/init.mongoDB')
 // const { checkOverload } = require('./helpers/check.connect');
 // checkOverload();
 // init routes
-app.get('/', (req, res) => {
-    const srt = "that cowws"
-    return res.status(200).json({
-        message: "OK",
-        metadata: srt.repeat(10000)
-    });
-})
+app.use('/', require('./routes'));
 // handing error messages
 
 

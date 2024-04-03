@@ -1,8 +1,8 @@
 'use strict';
 
 const mongoose = require('mongoose');
-const { db: { host, name, port } } = require('../configs/config.mongobd');
-const connectString = `mongodb://${host}:${port}/${name}`
+const { db: {user, pass, host, name, port } } = require('../configs/config.mongobd');
+const connectString = `mongodb://${user}:${pass}@${host}:${port}/${name}?authSource=admin&retryWrites=true&w=majority`
 console.log(connectString);
 const { countConnect } = require('../helpers/check.connect');
 class Database {
@@ -15,7 +15,7 @@ class Database {
             mongoose.set('debug', {color:true});
         }
         mongoose.connect( connectString,{
-            maxPoolSize: 50
+            maxPoolSize: 50,
         }).then( _ => console.log('Connect successfully Pro'))
        .catch( error => console.log(error) );
     }
