@@ -11,7 +11,7 @@ class KeyTokenService{
                 user: userId,
                 publicKey: publicKeyString,
             })
-            return tokens ? publicKeyString : null;
+            return tokens ? tokens.publicKey : null;
         } catch(e){
             return e
         }

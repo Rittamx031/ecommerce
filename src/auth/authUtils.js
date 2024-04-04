@@ -16,7 +16,7 @@ const createTokenPair = async (payload, publicKey, privateKey) => {
             if(err){
                 console.log('error verifying:: ',err);
             }else{
-                console.log('decode:: '.decode);
+                console.log(`decode:: `, decode);
             }
         });
         return {

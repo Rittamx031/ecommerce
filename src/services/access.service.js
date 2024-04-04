@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const KeyTokenService = require('../services/keyToken.service');
 const {createTokenPair} = require('../auth/authUtils');
-
+const {getInfoData} = require('../utils/index');
 const RoleShop = {
     SHOP: 'SHOP',
     WRITER: 'WRITER',
@@ -41,7 +41,15 @@ class AccessService {
 
             // Generate RSA key pair
             const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
-                modulusLength: 2048
+                modulusLength: 2048,
+                publicKeyEncoding: {
+                    type: 'pkcs1', // public key cryptography Standards !
+                    format: 'pem'
+                },
+                privateKeyEncoding: {
+                    type: 'pkcs1',
+                    format: 'pem',
+                },
             });
             console.log(publicKey);
             // Create a token with the public key
@@ -53,15 +61,15 @@ class AccessService {
                     message: "Failed to create publicKeyString",
                 };
             }
-
+            const publicKeyObject = crypto.createPublicKey(publicKeyString)
             // Create token pair with RSA keys
-            const tokens = await createTokenPair({ userId: newShop._id, email }, publicKey, privateKey);
+            const tokens = await createTokenPair({ userId: newShop._id, email }, publicKeyString, privateKey);
             console.log(`Create Token Access::`, tokens);
 
             return {
                 code: '001',
                 metadata: {
-                    user: newShop,
+                    user: getInfoData({fileds: ['_id','name', 'email'], object: newShop}),
                     tokens
                 }
             };
