@@ -51,7 +51,11 @@ class AccessService {
             tokens
         }
     }
-    static logout 
+    static logout =  async (keyStore) =>{
+        const delKey =  KeyTokenService.removeKeyById(keyStore._id);
+        console.log(delKey);
+        return delKey;
+    }
     static signUp = async ({ name, email, password }) => {
         try {
             // Step 1: Check if email already exists

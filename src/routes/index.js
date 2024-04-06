@@ -7,11 +7,9 @@ route.use(apikey)
 route.use(permission('0000'))
 
 route.use("/v1/api", require('./access'))
+// authentication 
 
+// 
 // check permission 
-// route.get('', (req, res) => {
-//     return res.status(200).json({
-//         message: "Wellcom tips javascript",
-//     });
-// })
+
 module.exports = route
