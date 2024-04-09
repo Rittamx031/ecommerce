@@ -22,7 +22,7 @@ const pro = {
         pass: process.env.DEV_PASS || 'mongoadmin',
         host: process.env.PRO_DB_HOST || 'localhost', 
         port: process.env.PRO_DB_PORT || 27017,
-        name: process.env.PRO_DB_NAME || 'production' 
+        name: process.env.PRO_DB_NAME || 'demo' 
     }
 };
 

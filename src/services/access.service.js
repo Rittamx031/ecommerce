@@ -4,9 +4,9 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const KeyTokenService = require('../services/keyToken.service');
 const {findByEmail} = require('../services/shop.service');
-const {createTokenPair} = require('../auth/authUtils');
+const {createTokenPair,vertifyJWT} = require('../auth/authUtils');
 const {getInfoData} = require('../utils/index');
-const { BadRequestError, AuthFailureResponse } = require('../core/error.response');
+const { BadRequestError, AuthFailureResponse, ForBiddenError } = require('../core/error.response');
 const RoleShop = {
     SHOP: 'SHOP',
     WRITER: 'WRITER',
@@ -16,12 +16,53 @@ const RoleShop = {
 
 class AccessService {
     /*
+    1 - check token use
+    2 -
+    */ 
+    static handleRefreshToken = async (refreshToken) =>{
+        const foundToken = await KeyTokenService.findByRefreshTokenUsed(refreshToken);
+        if(foundToken){
+            // decode  xem may la thang nao ?
+            const {userId, email} = await vertifyJWT( refreshToken, foundToken.privateKey);
+            console.log({userId, email});
+            await KeyTokenService.deleteKeyByUserID
+            throw new ForBiddenError("Somthing was happend please login");
+        }
+    // NO 
+        const holderToken = await KeyTokenService.findByRefreshToken(refreshToken);
+        if(!holderToken) throw new AuthFailureResponse("Shop not registered");
+        // vertify Token
+        const {userId, email} = await vertifyJWT( refreshToken, holderToken.privateKey);
+        // Check UserId
+        console.log({userId, email});
+        const shop = await findByEmail(email);
+        if(!shop) throw new AuthFailureResponse("Shop not registered");
+
+        // create new token
+        const tokens = await createTokenPair({userId, email},holderToken.publicKey , holderToken.privateKey);
+        // update token
+        await holderToken.update({
+            $set:{
+                refreshToken: tokens.refreshToken
+            },
+            $addToSet:{
+                refreshTokensUsed:tokens.refreshToken
+            }
+        });
+        return {
+            user:{userId, email},
+            tokens
+        }
+    }
+
+    /*
         1- check email
         2- match password
         3- create AT vs RT and save
         4- gennerate token
         5- get data return token 
     */ 
+
     static login = async ({email, password,refreshToken = null}) =>{
         // 1
         const foundShop = await findByEmail({email})
@@ -119,5 +160,4 @@ class AccessService {
         }
     };
 }
-
 module.exports = AccessService;

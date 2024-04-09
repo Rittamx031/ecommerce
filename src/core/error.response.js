@@ -29,4 +29,10 @@ class NotFoundResponse extends ErrorResponse {
         super(message, status);
     }
 }
-module.exports = {ConflictRequestError,BadRequestError,AuthFailureResponse, NotFoundResponse}
+class ForBiddenError extends ErrorResponse {
+    constructor(message = ReasonPhrases.FORBIDDEN,status= StatusCodes.FORBIDDEN) {
+        super(message, status);
+    }
+}
+
+module.exports = {ForBiddenError,ConflictRequestError,BadRequestError,AuthFailureResponse, NotFoundResponse}
