@@ -9,6 +9,7 @@ const route = express.Router();
 //signUp
 route.post('/shop/signup', asyncHandler(accessController.signUp));
 route.post('/shop/login', asyncHandler(accessController.login));
+
 // authentication
 route.use(authentication)
 route.post('/shop/logout', asyncHandler(accessController.logout));

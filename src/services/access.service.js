@@ -35,13 +35,13 @@ class AccessService {
         const {userId, email} = await vertifyJWT( refreshToken, holderToken.privateKey);
         // Check UserId
         console.log({userId, email});
-        const shop = await findByEmail(email);
+        const shop = await findByEmail({email});
         if(!shop) throw new AuthFailureResponse("Shop not registered");
 
         // create new token
         const tokens = await createTokenPair({userId, email},holderToken.publicKey , holderToken.privateKey);
         // update token
-        await holderToken.update({
+        await holderToken.updateOne({
             $set:{
                 refreshToken: tokens.refreshToken
             },

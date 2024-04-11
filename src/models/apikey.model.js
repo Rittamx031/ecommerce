@@ -1,31 +1,22 @@
 'use strict';
 
-// !dmbg
-const {model,Schema} = require('mongoose'); // Erase if already required
 
-const DOCUMENT_NAME = 'ApiKey';
-const COLLECTION_NAME = 'ApiKeys';
-// Declare the Schema of the Mongo model
-var ApiKeySchema = new Schema({
-    key: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    status: {
-        type: Boolean,
-        default: true
-    },
-    permissions: {
-        type: [String],
-        required: true,
-        enum: ['0000','1111','2222']
-    }
-},{
-    timestamps: true,
-    collection: COLLECTION_NAME
-}
-);
+const {model,Schema} = require('mongoose');
+const DOCUMENT_NAME = 'Product';
+const COLLECTION_NAME = 'products';
 
-//Export the model
-module.exports = model(DOCUMENT_NAME, ApiKeySchema);
+const ProductSchema = new Schema ({
+    product_name: { type: String, required: true },
+    product_thumb: { type: String, required: true },
+    product_description: String,
+    product_price: { type: Number, required: true },
+    product_quantity: { type: Number, required: true },
+    product_type: { type: String, required: true, enum: ['Electronics', 'Clothing', 'Furniture']},
+    product_shop: String, //{ type: Schema.Types.ObjectId, ref: 'User' },
+    product_attributes: { type: Schema. Types. Mixed, required: true }
+    }, {
+    collection: COLLECTION_NAME,
+    timestamps: true
+});
+ 
+module.exports = model(DOCUMENT_NAME, ProductSchema)
