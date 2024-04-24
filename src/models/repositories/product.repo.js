@@ -2,7 +2,7 @@
 
 const {product,clothing,electronic,furnitrue} = require('../product.model');
 const {Types} = require('mongoose');
-const {getSelectData, ungetSelectData } = require('../../utils/index');
+const {getSelectData, ungetSelectData, updateNestedObjectParser } = require('../../utils/index');
 const findAllDraftForShop = async({query, limit, skip}) =>{
     return await queryProduct({query, limit, skip})
 }
@@ -71,6 +71,12 @@ const seacrhProduct = async ({key_search}) =>{
 const findProduct = async({product_id, unSelect}) =>{
     return await product.findById(product_id).select(ungetSelectData(unSelect));
 }
+
+const updateProductById = async({productId,bodyUpdate, model, isNew = true})=>{
+    return await model.findByIdAndUpdate(productId, bodyUpdate,{
+        new: isNew
+    })
+}
 const queryProduct = async({query, limit, skip}) =>{
     return await product.find(query)
     .populate('product_shop', 'name email -_id')
@@ -87,5 +93,6 @@ module.exports = {
     unPublishProductByShop,
     seacrhProduct,
     findAllProducts,
-    findProduct
+    findProduct,
+    updateProductById
 }

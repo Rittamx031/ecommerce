@@ -11,6 +11,7 @@ route.get('/:id', asyncHandler(productController.findProduct));
 // authentication
 route.use(authenticationv2)
 route.post('', asyncHandler(productController.createProduct));
+route.patch('', asyncHandler(productController.updateProduct));
 route.post('/public/:id', asyncHandler(productController.publicProduct));
 route.post('/unpublic/:id', asyncHandler(productController.unPublicProduct));
 
