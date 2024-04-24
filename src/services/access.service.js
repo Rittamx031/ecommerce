@@ -54,7 +54,35 @@ class AccessService {
             tokens
         }
     }
+    static handleRefreshTokenv2 = async ({refreshToken, user,keyStore}) =>{
+        const {userId, email} = user;
 
+        if(keyStore.refreshTokensUsed.includes(refreshToken)){
+            await KeyTokenService.deleteKeyByUserID(userId);
+            throw new ForBiddenError("Somthing was happend please login");
+        }
+
+        if(keyStore.refreshToken !== refreshToken) throw new AuthFailureResponse("Shop not registered");
+
+        const shop = await findByEmail({email});
+        if(!shop) throw new AuthFailureResponse("Shop not registered");
+
+        // create new token
+        const tokens = await createTokenPair({userId, email},keyStore.publicKey , keyStore.privateKey);
+        // update token
+        await keyStore.updateOne({
+            $set:{
+                refreshToken: tokens.refreshToken
+            },
+            $addToSet:{
+                refreshTokensUsed:tokens.refreshToken
+            }
+        });
+        return {
+            user,
+            tokens
+        }
+    }
     /*
         1- check email
         2- match password
