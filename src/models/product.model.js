@@ -23,24 +23,25 @@ const productSchema = new Schema ({
         type: Number,
         default: 4.5,
         min: [1, 'Rating must be above 1.0'],
-        min: [5, 'Rating must be below 5.0'],
+        max: [5, 'Rating must be below 5.0'],
         set: (val) => Math.round(val*10)/10
     },
     product_variations: {
         type: Array,
         default: []
     },
-    isDraft: {type: Boolean, dafault: true, select:false, index:true },
-    isPublish: {type: Boolean, dafault: false, select:false, index:true },
+    isDraft: {type: Boolean, default: true, select:false, index:true },
+    isPublish: {type: Boolean, default: false, select:false, index:true }
     // , isPublish, unPublish
 }, {
     collection: COLLECTION_NAME,
     timestamps: true
 })
 // Document middleware: runs before .save() and .create()...
-
+// create index to search
+productSchema.index({product_name : 'text', product_description: 'text'})
 productSchema.pre('save', function (next){
-    this.product_shop = slugify(this.product_name), {lower: true};
+    this.product_slug = slugify(this.product_name), {lower: true};
     next();
 })
 const clothingSchema = new Schema({
