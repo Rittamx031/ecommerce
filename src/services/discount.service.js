@@ -10,7 +10,7 @@
 const {BadRequestError,
        NotFoundResponse} = require('../core/error.response')
 const discount = require('../models/discout.model');
-const { findAllDiscountCodesUnselect } = require('../models/repositories/discount.repo');
+const { findAllDiscountCodesUnselect, findDiscount } = require('../models/repositories/discount.repo');
 const { findAllProducts } = require('../models/repositories/product.repo');
 const { convertToObjectIdMongodb } = require('../utils');
 class DiscountService{
@@ -58,18 +58,12 @@ class DiscountService{
 
         return newDiscount;
     }
-    static async getDiscountAmount(payload){
-
-    }
     static async updateDiscountCode(payload){
 
     }
 //  get all discount code available for product
     static async getAllDiscountCodesWithProduct({code, shopId, userId, limit, page}){
-        const foundDiscout = await discount.findOne({
-            discount_code: code,
-            discount_shopId: convertToObjectIdMongodb(shopId)
-        }).lean();
+        const foundDiscout = await findDiscount(code, shopId);
 
         if(!foundDiscout || !foundDiscout.discount_is_active) throw new NotFoundResponse('Discount not exists')
 
@@ -115,7 +109,119 @@ class DiscountService{
             unSelect:['v','discount_shopId'],
             model: discount
         })
+        return discounts;
+    }
+    /* 
+        Apply discount code
+        products = [{
+            productId,
+            shopId,
+            quantity,
+            price,
+            name
+        },{
+            productId,
+            shopId,
+            quantity,
+            price,
+            name
+        }]
+     */ 
+    static async getDiscountAmount({
+        codeId, userId, shopId, products
+    }){
+        const foundDiscout = await findDiscount(codeId, shopId);
 
+        if(!foundDiscout) throw new NotFoundResponse("Discount dosen't exits");
+
+        const {discount_is_active,
+                discount_max_users,
+                discount_start_date,
+                discount_end_date,
+                discount_min_order_value,
+                discount_max_uses_per_user,
+                discount_users_used,
+                discount_value,
+                discount_type
+        } = foundDiscout;
+
+        if(!discount_is_active) throw new BadRequestError("Discount expried!");
+        if(discount_max_users <=0) throw new BadRequestError("Discount are out!");
+
+        if(new Date() < new Date(discount_start_date) || new Date() > new Date(discount_end_date)){
+            throw new BadRequestError("Discount expried!");
+        }
+        //  check em co gia tri thoi thieu ko
+        let totalOrder = 0;
+        if(discount_min_order_value > 0){
+            totalOrder = products.reduce((acc, product) => {
+                return acc + (product.price * product.quantity);
+            })
+
+            if(totalOrder < discount_min_order_value){
+                throw new NotFoundResponse(`discount require  a minium order value of ${discount_min_order_value}`)
+            }
+
+            if(discount_max_uses_per_user>0){
+                const userDiscount = discount_users_used.find( user => user.userId === userId )
+                if (userDiscount){
+
+                }
+            }
+            //  check xem discount is fixed_amount  or percentage
+
+            const amount = discount_type === 'fixed_amount' ? discount_value : totalOrder*(discount_value/100);
+
+            return {
+                totalOrder,
+                discount: amount,
+                totalPrice: totalOrder - amount
+            }
+        }
+    }
+    /*
+        Hai cách xóa data. 
+        1 - ném vào 1 db khác để trường hợp kiện tùng, cần restore.
+        2 - đánh dấu bằng 1 trường vd deleted.
+    */ 
+    static async deleteDiscountCode({
+        shopId,
+        codeId
+    }){
+        // const foundDiscout = await findDiscount(codeId, shopId);
+        // if(!foundDiscout) throw new NotFoundResponse("Discount dosen't exits");
+        const  deletedCode = await discount.findOneAndDelete({
+            discount_code: codeId,
+            discount_shopId: convertToObjectIdMongodb(shopId)
+        })
+        return deletedCode;
+    }
+
+    /* User Cancel discount code*/ 
+    static async cancelDiscountCode({
+        codeId,
+        shopId,
+        userId
+    }){
+        const foundDiscout = await findDocument({
+            model: discount,
+            filter:{
+                discount_code: codeId,
+                discount_shopId: convertToObjectIdMongodb(shopId)
+            }
+        });
+        if(!foundDiscout) throw new NotFoundResponse("Discount dosen't exits");
+
+        const result = await foundDiscout.updateOne({
+            $pull:{
+                discount_users_used: userId
+            },
+            $inc: {
+                discount_max_users: 1,
+                discount_user_count: -1
+            }
+        })
+        return result;
     }
 }
 

@@ -42,6 +42,17 @@ const findAllDiscountCodesSelect = async({
 //         inven_stock: stock
 //     })
 // }
-
+const findDiscount = async(codeId, shopId) =>{
+    return await discount.findOne({
+        discount_code: codeId,
+        discount_shopId: convertToObjectIdMongodb(shopId)
+    }).lean();
+}
+const findDocument = async(mode, filter) =>{
+    return await mode.findOne(filter);
+}
 module.exports = {findAllDiscountCodesUnselect,
-    findAllDiscountCodesSelect}
+    findAllDiscountCodesSelect,
+    findDocument,
+    findDiscount
+}
