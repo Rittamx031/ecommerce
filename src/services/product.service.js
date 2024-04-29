@@ -2,7 +2,7 @@
 
 const {product, clothing, electronic} = require('../models/product.model')
 const {BadRequestError} = require('../core/error.response');
-
+const {insertInventory} = require('../models/repositories/inventory.repo');
 class ProductFactory {
     /* 
         types: 'Clothing', 'Electronic'
@@ -34,7 +34,15 @@ class Product {
         this.product_attributes = product_attributes
     }
     async createProduct(product_id){
-        return await product.create({...this, _id: product_id});
+        const newProduct = await product.create({...this, _id: product_id});
+        if(newProduct){
+            const inventory =  insertInventory({
+                productId: this._id,
+                ShopId: this.product_shop,
+                stock: this.product_quantity
+            })
+        }
+
     }
 }
 

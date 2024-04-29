@@ -46,7 +46,7 @@ class AccessService {
                 refreshToken: tokens.refreshToken
             },
             $addToSet:{
-                refreshTokensUsed:tokens.refreshToken
+                refreshTokensUsed: tokens.refreshToken
             }
         });
         return {
