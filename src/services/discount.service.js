@@ -9,7 +9,7 @@
 */ 
 const {BadRequestError,
        NotFoundResponse} = require('../core/error.response')
-const discount = require('../models/discout.model');
+const {discount} = require('../models/discount.model');
 const { findAllDiscountCodesUnselect, findDiscount } = require('../models/repositories/discount.repo');
 const { findAllProducts } = require('../models/repositories/product.repo');
 const { convertToObjectIdMongodb } = require('../utils');
@@ -19,7 +19,7 @@ class DiscountService{
             code, start_date, end_date,
             is_active, shopId, min_order_value, product_ids,
             applies_to, name, description,
-            type, value, max_value, max_users,
+            type, value, max_value, max_uses,
             user_count, max_uses_per_user
         } = payload;
         // Kiểm tra
@@ -47,11 +47,12 @@ class DiscountService{
             discount_product_ids: product_ids,
             discount_applies_to: applies_to,
             discount_name: name,
+            discount_uses_count: 0 ,
             discount_description: description,
             discount_type: type,
             discount_value: value,
             discount_max_value: max_value,
-            discount_max_users: max_users,
+            discount_max_uses: max_uses,
             discount_user_count: user_count,
             discount_max_uses_per_user: max_uses_per_user
         });
@@ -148,15 +149,15 @@ class DiscountService{
         if(!discount_is_active) throw new BadRequestError("Discount expried!");
         if(discount_max_users <=0) throw new BadRequestError("Discount are out!");
 
-        if(new Date() < new Date(discount_start_date) || new Date() > new Date(discount_end_date)){
-            throw new BadRequestError("Discount expried!");
-        }
+        // if(new Date() < new Date(discount_start_date) || new Date() > new Date(discount_end_date)){
+        //     throw new BadRequestError("Discount expried!");
+        // }
         //  check em co gia tri thoi thieu ko
         let totalOrder = 0;
         if(discount_min_order_value > 0){
             totalOrder = products.reduce((acc, product) => {
                 return acc + (product.price * product.quantity);
-            })
+            }, 0)
 
             if(totalOrder < discount_min_order_value){
                 throw new NotFoundResponse(`discount require  a minium order value of ${discount_min_order_value}`)

@@ -22,10 +22,13 @@ const findAllProducts = async({limit, sort ,page , filter, select}) =>{
     .skip(skip)
     .limit(limit)
     .select(getSelectData(select))
-    .lean()
-    .exec();
+    .lean();
 
     return products;
+}
+
+const getProductById = async(productId) =>{
+    return await product.findById(productId).select(ungetSelectData('product_shop'));
 }
 
 const publishProductByShop = async({product_shop,product_id}) => {
@@ -94,5 +97,6 @@ module.exports = {
     seacrhProduct,
     findAllProducts,
     findProduct,
-    updateProductById
+    updateProductById,
+    getProductById
 }

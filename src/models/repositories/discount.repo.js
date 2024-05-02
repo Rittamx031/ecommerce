@@ -1,7 +1,7 @@
 const {Types} = require('mongoose');
 
-const discount = require('../discout.model');
-const { ungetSelectData, getSelectData } = require('../../utils');
+const {discount} = require('../discount.model');
+const { ungetSelectData, getSelectData, convertToObjectIdMongodb } = require('../../utils');
 
 
 const findAllDiscountCodesUnselect = async({
@@ -49,7 +49,7 @@ const findDiscount = async(codeId, shopId) =>{
     }).lean();
 }
 const findDocument = async(mode, filter) =>{
-    return await mode.findOne(filter);
+    return await mode.find(filter);
 }
 module.exports = {findAllDiscountCodesUnselect,
     findAllDiscountCodesSelect,

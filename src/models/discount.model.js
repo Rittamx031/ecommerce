@@ -1,6 +1,6 @@
 'use strict';
 
-const {model, Schema, Types} = require('mongoose');
+const {model, Schema} = require('mongoose');
 
 const DOCUMENT_NAME = 'Discount';
 const COLLECTION_NAME = 'discounts';
@@ -27,4 +27,5 @@ const discountSchema= new Schema ({
         collection: COLLECTION_NAME
     });
     
-model.exports = model(DOCUMENT_NAME, discountSchema)
+module.exports = 
+{discount: model(DOCUMENT_NAME, discountSchema)}
