@@ -28,7 +28,7 @@ const findAllProducts = async({limit, sort ,page , filter, select}) =>{
 }
 
 const getProductById = async(productId) =>{
-    return await product.findById(productId).select(ungetSelectData('product_shop'));
+    return await product.findById(productId).select(ungetSelectData(['v']));
 }
 
 const publishProductByShop = async({product_shop,product_id}) => {

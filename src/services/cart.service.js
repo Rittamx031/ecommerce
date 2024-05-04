@@ -24,20 +24,13 @@ class CartService{
             cart_userId : userId, 
             cart_state: "active", 
             "cart_products.productId" : productId
-        }, updateSet = {
-            $inc: {
-                "cart_products.$.productId" : quantity
-            }
-        },options = {upsert: true, new: true}
-
-
-        updateOrInsert = {
+        }, updateOrInsert = {
             $addToSet:{
                 cart_products: product
             }
         },options = {upsert: true, new: true}
 
-        return await cart.findOneAndUpdate(query, updateSet, options);
+        return await cart.findOneAndUpdate(query, updateOrInsert, options);
     }
     // End Repo Cart
     // Create
@@ -73,9 +66,9 @@ class CartService{
             version:
     */ 
 
-    static async addToCartV2({userId, product= {}}){
+    static async addToCartV2({userId, shop_order_ids}){
         //  Check cart ton tai
-        const {productId, quantity, old_quantity} = shop_order_ids[0]?.item_products;
+        const {productId, quantity, old_quantity} = shop_order_ids[0]?.item_products[0];
 
         const foundProduct = await getProductById(productId);
 
@@ -90,7 +83,7 @@ class CartService{
             return await  CartService.deleteProductInCart({userId,productId})
         }
 
-        return await CartService.updateUserCartQuantity({user, product:{productId, quantity}})
+        return await CartService.updateUserCartQuantity({userId, product:{productId, quantity}})
     }
     static async ReduceProductQuantity({userId, product= {}}){
         //  Check cart ton tai
