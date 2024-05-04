@@ -31,6 +31,18 @@ const getProductById = async(productId) =>{
     return await product.findById(productId).select(ungetSelectData(['v']));
 }
 
+const checkProductByServer = async(products) =>{
+    return await Promise.all(products.map( async (product) => {
+        const foundProduct = await getProductById(product.productId);
+        if(foundProduct){
+            return {
+                price: foundProduct.product_price,
+                quantity: product.quantity,
+                productId: product.productId,
+            }
+        }
+    }))
+}
 const publishProductByShop = async({product_shop,product_id}) => {
     const foundShop = await product.findOne({
         product_shop: new Types.ObjectId(product_shop),
@@ -91,6 +103,7 @@ const queryProduct = async({query, limit, skip}) =>{
 }
 module.exports = {
     findAllDraftForShop,
+    checkProductByServer,
     publishProductByShop,
     findAllPublicForShop,
     unPublishProductByShop,

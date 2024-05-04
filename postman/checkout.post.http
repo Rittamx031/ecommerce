@@ -1,0 +1,27 @@
+@url_dev = http://localhost:3052/v1/api/checkout
+### insert product
+POST {{url_dev}}/review
+Content-Type: application/json
+x-api-key: 53a354b9c0a0bc5c2f964cc21a1d45cefe7830c3453210f673ddd1e8c89db61eeee9e19fa60e25d74e29b45c83bdaeaad7c2079cf2bccf5e0958769cbd7db8b4
+
+{
+    "userId": "1",
+    "cartId": "6633d2c452e3bf0aa89f36db",
+    "shop_order_ids": [
+        {
+            "shopId": "660e63072c74b1d4e3484727",
+             "shop_discounts":[{
+                    "shopId": "660e63072c74b1d4e3484727",
+                    "discountId":"6631bb43a9d7e432776ccacd",
+                    "codeId": "SHOP-PS-22"
+                }],
+            "item_products": [
+                {
+                    "productId": "6628ec97a6ee5adda06cdfbd",
+                    "quantity": 2,
+                    "price": 50
+                }
+            ]
+        }
+    ]
+}
