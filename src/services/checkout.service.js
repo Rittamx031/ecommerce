@@ -143,6 +143,34 @@ class CheckoutService {
         
         return newOrder
     }
+    /*
+    1> Query orders [User]
+    */ 
+    static async getOrdersByUser({userId}){
+        return await order.find({order_userId: userId});
+    }
+    /*
+    2> Query get One Order [User]
+    */ 
+    static async getOrderByUser({userId}){
+        return await order.find({order_userId: userId});
+    }
+    /*
+    3> Cancelled Order [User]
+    */ 
+    static async cancelOrderByUser({userId}){
+        return await order.find({order_userId: userId});
+    }
+
+
+        /*
+    3> Update Order status [Shop | Admin]
+    */ 
+    static async updateOrderStatusByShop({userId}){
+        return await order.find({order_userId: userId});
+    }   
+
+    
 }
 
 module.exports = CheckoutService;

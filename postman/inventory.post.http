@@ -1,0 +1,27 @@
+@url_dev = http://localhost:3052/v1/api/inventory
+
+### insert product
+POST {{url_dev}}
+Content-Type: application/json
+x-client-id: 660e63072c74b1d4e3484727
+x-api-key: 53a354b9c0a0bc5c2f964cc21a1d45cefe7830c3453210f673ddd1e8c89db61eeee9e19fa60e25d74e29b45c83bdaeaad7c2079cf2bccf5e0958769cbd7db8b4
+authorization: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjBlNjMwNzJjNzRiMWQ0ZTM0ODQ3MjciLCJlbWFpbCI6InRoYXR2MTIxY2VkMmNjQGdtYWlsLmNvbSIsImlhdCI6MTcxMjY1Mjg2NywiZXhwIjoxNzEyODI1NjY3fQ.Y21ESD1sKLOu-A3QD6sbjMDU-2FBABMJDBlu77ETiusfi8YpA1R2cx_2l-c7byBhw00w6Un8bD3r-LPMBFtz0LvZccuqZrXe-nAgy9IVmE5gWqnrejOFRaftV2HU1iuFiQlLmu4bFFcPSXaAHI53zD_NSQ9E_HztojA-eZZZAGJh7EbTPQqPplheFJ0UOqUxFa2Mp0Rj5rJ7kPzhzU-ct1REMkO8DV7Uh3y_76tue-5ICZbYgVcptxXMi2OJJxsV359_VaQ589NJVAB5Ko1po_53ya07fxDZrpVRuglHxafZLGxXPNMzK_ALZhIZ2lhGkAF8BBhPJhB43Fe8-4dwSQ
+
+{
+  "name": "name fixed amount",
+  "description": "description",
+  "type": "percentage",
+  "value": 10,
+  "max_value": 30000,
+  "code": "SHOP-PS-33",
+  "start_date": "2023-04-15 09:00:00",
+  "end_date": "2023-04-20 09:00:00",
+  "max_uses": 100,
+  "uses_count": 0,
+  "users_used": [],
+  "max_uses_per_user": 1,
+  "min_order_value": 200000,
+  "created_by": {},
+  "is_active": true,
+  "applies_to": "all"
+}
