@@ -1,10 +1,11 @@
 'use strict';
 const {BadRequestError,
     NotFoundResponse} = require('../core/error.response')
-
+const {order} = require('../models/order.model');
 const { findCartById } = require("../models/repositories/cart.repo");
 const DiscountService = require("../services/discount.service");
 const {checkProductByServer} = require("../models/repositories/product.repo");
+const { relaseLock } = require('./redis.service');
 class CheckoutService {
     // login and Without login
     /*
@@ -101,7 +102,47 @@ class CheckoutService {
             shop_order_ids_new
         }
     }
-    
+    static async checkout({shop_order_ids_new,cartId,userId, userPayment={} , userAddress={}}){
+        const {shop_order_ids_new, checkout_order} = await CheckoutService.checkoutReview({
+            cartId,
+            userId,
+            shop_order_ids: shop_order_ids_new
+        })
+        // check lai một lần nữa xem có vượt tồn kho hay không?
+        // get new array Products 
+        const products = shop_order_ids_new.flatMap( order => order.item_products)
+        console.log(`[1] :`, products);
+        const acquireProducts =[];
+        for(let i =0 ; i <= products.length; i++){
+            const {productId, quantity} = products[i];
+            const keyLock = await acquireLock(productId, quantity,cartId);
+            console.log(`[2] :::`, keyLock);
+            acquireProducts.push(keyLock ? true : false);
+            if(keyLock) {
+                await relaseLock(keyLock);
+            }
+        }
+
+        // check if có sản phẩm hết hàng trong kho 
+        if(acquireProducts.includes(false)){
+            throw new BadRequestError('Product out of stock');
+        }
+
+        const newOrder = await order.create({
+            order_userId: userId,
+            order_checkout: checkout_order,
+            order_payment: userPayment,
+            order_shipping: userAddress,
+            order_cartId: cartId,
+            order_products: products
+        });
+        // truờng hợp: new ínert thành công, thì remove product in cart
+        if(newOrder){
+
+        }
+        
+        return newOrder
+    }
 }
 
 module.exports = CheckoutService;
