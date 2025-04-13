@@ -1,10 +1,11 @@
 const redis = require('redis');
 const {promisify} = require('util');
 const redisClient = redis.createClient();
-const {reservationInventory} = require('../models/repositories/inventory.repo')
-const pexpire = promisify(redisClient.pexpire).bind(redisClient);
+const {reservationInventory} = require('../models/repositories/inventory.repo');
+const { Url } = require("url");
+const pexpire = promisify(redisClient.expire).bind(redisClient);
 
-const setnvxAsync =  promisify(redisClient.pexpire).bind(redisClient);
+const setnvxAsync =  promisify(redisClient.expire).bind(redisClient);
 
 const acquireLock = async (productId, quantity, cartId) =>{
     const key = 'lock_v2023_${productId}'
@@ -36,7 +37,15 @@ const relaseLock = async keyLock =>{
     return await delAsyncKey(keyLock);
 }
 
+const newClient = () => {
+    // const url = `redis://default:vhXdND2OLTl263oXZbTX3Lb3yWB4zy8L@redis-10422.c283.us-east-1-4.ec2.redns.redis-cloud.com:10422/Vu-free-db`;
+    // return redis.createClient({
+    //     url: new URL(url),
+    // });
+    return redis.createClient();
+};
 module.exports = {
     acquireLock,
-    relaseLock
+    relaseLock,
+    newClient
 }
